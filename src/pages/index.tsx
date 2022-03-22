@@ -13,7 +13,7 @@ import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 
 interface Post {
-  uid?: string;
+  slug?: string;
   first_publication_date: string | null;
   data: {
     title: string;
@@ -35,7 +35,7 @@ interface HomeProps {
 function returnFormatedPosts(results: Record<string, any>[]): Post[] {
   return results.map(post => {
     return {
-      uid: post.uid,
+      slug: post.uid,
       first_publication_date: format(
         new Date(post.first_publication_date),
         'dd MMM yyyy',
@@ -74,11 +74,12 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
 
         <div className={styles.contentPosts}>
           {posts.map(post => (
-            <Link key={post.uid} href={`/post/${post.uid}`}>
+            <Link key={post.slug} href={`/post/${post.slug}`}>
               <a>
                 <div className={styles.bar} />
                 <h1>{post.data.title}</h1>
                 <p>{post.data.subtitle}</p>
+
                 <div className={commonStyles.contentPostsAuthor}>
                   <div>
                     <FiCalendar size="1.25rem" />
