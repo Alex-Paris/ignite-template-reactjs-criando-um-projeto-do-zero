@@ -7,6 +7,8 @@ import { predicate } from '@prismicio/client';
 import { PrismicRichText } from '@prismicio/react';
 import { RichTextField } from '@prismicio/types';
 
+import Header from '../../components/Header';
+
 import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
@@ -43,6 +45,8 @@ export default function Post({ post }: PostProps): JSX.Element {
           <h1>CHora concorrencia</h1>
         ) : (
           <>
+            <Header />
+
             {post.data.banner.url && (
               <img
                 className={styles.postBanner}
