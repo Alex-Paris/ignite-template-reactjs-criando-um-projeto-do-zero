@@ -1,8 +1,9 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
+import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
 import ptBR from 'date-fns/locale/pt-BR';
 import { format } from 'date-fns';
-import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
+import { predicate } from '@prismicio/client';
 import { PrismicRichText } from '@prismicio/react';
 import { RichTextField } from '@prismicio/types';
 
@@ -37,52 +38,72 @@ export default function Post({ post }: PostProps): JSX.Element {
         <title>Home | spacetraveling</title>
       </Head>
 
-      <main className={commonStyles.contentContainer}>
-        <img src={post.data.banner.url} alt="banner" />
+      <main>
+        {!post ? (
+          <h1>CHora concorrencia</h1>
+        ) : (
+          <>
+            {post.data.banner.url && (
+              <img
+                className={styles.postBanner}
+                src={post.data.banner.url}
+                alt="banner"
+              />
+            )}
 
-        <article className={styles.post}>
-          <h1>{post.data.title}</h1>
+            <article
+              className={`${commonStyles.contentContainer} ${styles.post}`}
+            >
+              <h1>{post.data.title}</h1>
 
-          <div className={commonStyles.contentPostsAuthor}>
-            <div>
-              <FiCalendar size="1.25rem" />
-              <time>{post.first_publication_date}</time>
-            </div>
-            <div>
-              <FiUser size="1.25rem" />
-              {post.data.author}
-            </div>
-            <div>
-              <FiClock size="1.25rem" />
-              {post.data.author}
-            </div>
-          </div>
+              <div className={commonStyles.contentPostsAuthor}>
+                <div>
+                  <FiCalendar size="1.25rem" />
+                  <time>{post.first_publication_date}</time>
+                </div>
+                <div>
+                  <FiUser size="1.25rem" />
+                  {post.data.author}
+                </div>
+                <div>
+                  <FiClock size="1.25rem" />5 min.
+                </div>
+              </div>
 
-          <div className={styles.postContent}>
-            {post.data.content.map(content => (
-              <>
-                <h2>{content.heading}</h2>
-                <PrismicRichText field={content.body} />
-              </>
-            ))}
-          </div>
-        </article>
+              <div className={styles.postContent}>
+                {post.data.content.map(content => (
+                  <>
+                    <h2>{content.heading}</h2>
+                    <PrismicRichText field={content.body} />
+                  </>
+                ))}
+              </div>
+            </article>
+          </>
+        )}
       </main>
     </>
   );
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const prismic = getPrismicClient();
+  const response = await prismic.get({
+    predicates: [predicate.at('document.type', 'posts')],
+    pageSize: 3,
+  });
+
+  const paths = response.results.map(post => {
+    return {
+      params: {
+        slug: post.uid,
+      },
+    };
+  });
+
   return {
-    // Set a static variable loadded before in another static page
-    paths: [
-      // { params: { slug: 'the-meaning-of-life' } }
-    ],
-    // fallback
-    //  true: load the page before getting information from getStaticProps
-    //  false: return 404 if getStaticProps was not loadded
-    //  blocking: wait server side rendering before showing page
-    fallback: 'blocking',
+    paths,
+    fallback: true,
   };
 };
 
@@ -101,12 +122,10 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     data: response.data,
   };
 
-  console.log(JSON.stringify(post.data.content, null, 2));
-
   return {
     props: {
       post,
     },
-    redirect: 60 * 30, // 30 minutes
+    redirect: 60 * 1, // 30 minutes
   };
 };
