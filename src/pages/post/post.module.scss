@@ -46,3 +46,15 @@
   // left: 0px;
   // top: 105px;
 }
+
+.postWait {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: fixed;
+  width: 100%;
+  height: 100%;
+
+  font-weight: bold;
+}

@@ -114,7 +114,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const postsResponse = await prismic.get({
     predicates: [predicate.at('document.type', 'posts')],
     fetch: ['posts.title', 'posts.subtitle', 'posts.author'],
-    pageSize: 1,
+    pageSize: 2,
   });
 
   const results = returnFormatedPosts(postsResponse.results);

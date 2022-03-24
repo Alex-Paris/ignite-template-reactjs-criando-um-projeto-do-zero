@@ -42,7 +42,9 @@ export default function Post({ post }: PostProps): JSX.Element {
 
       <main>
         {!post ? (
-          <h1>CHora concorrencia</h1>
+          <div className={styles.postWait}>
+            <h1>Carregando...</h1>
+          </div>
         ) : (
           <>
             <Header />
@@ -130,6 +132,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       post,
     },
-    redirect: 60 * 1, // 30 minutes
+    redirect: 60 * 30, // 30 minutes
   };
 };
