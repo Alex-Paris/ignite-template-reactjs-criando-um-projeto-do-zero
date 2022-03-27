@@ -25,7 +25,7 @@ interface Post {
     author: string;
     content: {
       heading: string;
-      body: RichTextField;
+      body: Record<string, unknown>[];
     }[];
   };
 }
@@ -34,7 +34,16 @@ interface PostProps {
   post: Post;
 }
 
-export default function Post({ post }: PostProps): JSX.Element {
+export default function Post({ post: propPost }: PostProps): JSX.Element {
+  const post = {
+    ...propPost,
+    first_publication_date: format(
+      new Date(propPost.first_publication_date),
+      'dd MMM yyyy',
+      { locale: ptBR }
+    ),
+  };
+
   const { isFallback } = useRouter();
 
   return (
@@ -83,7 +92,9 @@ export default function Post({ post }: PostProps): JSX.Element {
                 {post.data.content.map(content => (
                   <div key={content.heading}>
                     <h2>{content.heading}</h2>
-                    <PrismicRichText field={content.body} />
+                    <PrismicRichText
+                      field={content.body as unknown as RichTextField}
+                    />
                   </div>
                 ))}
               </div>
@@ -123,11 +134,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const response = await prismic.getByUID('posts', String(slug), {});
 
   const post = {
-    first_publication_date: format(
-      new Date(response.first_publication_date),
-      'dd MMM yyyy',
-      { locale: ptBR }
-    ),
+    uid: response.uid,
+    first_publication_date: response.first_publication_date,
     data: response.data,
   };
 
