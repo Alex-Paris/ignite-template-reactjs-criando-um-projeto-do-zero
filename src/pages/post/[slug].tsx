@@ -1,13 +1,14 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
 import ptBR from 'date-fns/locale/pt-BR';
 import { format } from 'date-fns';
-import { predicate } from '@prismicio/client';
 import { PrismicRichText } from '@prismicio/react';
 import { RichTextField } from '@prismicio/types';
+import { predicate } from '@prismicio/client';
+import { RichText } from 'prismic-dom';
 
-import { useRouter } from 'next/router';
 import Header from '../../components/Header';
 
 import { getPrismicClient } from '../../services/prismic';
@@ -35,6 +36,8 @@ interface PostProps {
 }
 
 export default function Post({ post: propPost }: PostProps): JSX.Element {
+  const { isFallback } = useRouter();
+
   const post = {
     ...propPost,
     first_publication_date: format(
@@ -42,9 +45,14 @@ export default function Post({ post: propPost }: PostProps): JSX.Element {
       'dd MMM yyyy',
       { locale: ptBR }
     ),
-  };
+    minutes_lecture: propPost.data.content.reduce((minLecture, content) => {
+      const size = RichText.asText(content.body).split(/[,.\s]/).length;
 
-  const { isFallback } = useRouter();
+      /* eslint no-param-reassign: ["off"] */
+      minLecture = Math.ceil(size / 200);
+      return minLecture;
+    }, 0),
+  };
 
   return (
     <>
@@ -84,7 +92,8 @@ export default function Post({ post: propPost }: PostProps): JSX.Element {
                   {post.data.author}
                 </div>
                 <div>
-                  <FiClock size="1.25rem" />5 min.
+                  <FiClock size="1.25rem" />
+                  {post.minutes_lecture} min
                 </div>
               </div>
 
