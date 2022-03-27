@@ -1,0 +1,12 @@
+Olá amigo avaliador(a)
+
+Espero que esteja bem. =D
+Preciso passar alguns detalhes que acontecem devido ao tempo entre a criação do curso e
+a realização desta tarefa (praticamente um ano depois).
+
+- Correção de teste 'Home.spec.tsx' e 'Post.spec.tsx
+
+O Prismic não possui mais a área de configuração pelo site, ficando necessário a implementação
+do componente SliceMachine. Este, por sua vez, já atualiza automaticamente os componentes do
+prismic existentes, onde a função 'prismic.query' foi substituída pelo 'prismic.get', me forçando
+a corrigir os arquivos
