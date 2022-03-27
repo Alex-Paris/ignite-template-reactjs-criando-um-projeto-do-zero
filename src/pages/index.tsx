@@ -49,7 +49,7 @@ function returnFormatedPosts(results: Record<string, any>[]): Post[] {
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
   const { results, next_page } = postsPagination;
 
-  const [posts, setPosts] = useState(results);
+  const [posts, setPosts] = useState(returnFormatedPosts(results));
   const [nextPage, setNextPage] = useState(next_page);
 
   async function handleLoadMorePosts(): Promise<void> {
@@ -74,24 +74,26 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
 
         <div className={styles.contentPosts}>
           {posts.map(post => (
-            <Link key={post.slug} href={`/post/${post.slug}`}>
-              <a>
-                <div className={styles.bar} />
-                <h1>{post.data.title}</h1>
-                <p>{post.data.subtitle}</p>
+            <div key={post.slug}>
+              <Link href={`/post/${post.slug}`}>
+                <a>
+                  <div className={styles.bar} />
+                  <h1>{post.data.title}</h1>
+                  <p>{post.data.subtitle}</p>
 
-                <div className={commonStyles.contentPostsAuthor}>
-                  <div>
-                    <FiCalendar size="1.25rem" />
-                    <time>{post.first_publication_date}</time>
+                  <div className={commonStyles.contentPostsAuthor}>
+                    <div>
+                      <FiCalendar size="1.25rem" />
+                      {post.first_publication_date}
+                    </div>
+                    <div>
+                      <FiUser size="1.25rem" />
+                      {post.data.author}
+                    </div>
                   </div>
-                  <div>
-                    <FiUser size="1.25rem" />
-                    {post.data.author}
-                  </div>
-                </div>
-              </a>
-            </Link>
+                </a>
+              </Link>
+            </div>
           ))}
         </div>
 
@@ -117,13 +119,11 @@ export const getStaticProps: GetStaticProps = async () => {
     pageSize: 2,
   });
 
-  const results = returnFormatedPosts(postsResponse.results);
-
   return {
     props: {
       postsPagination: {
         next_page: postsResponse.next_page,
-        results,
+        results: postsResponse.results,
       },
     },
   };

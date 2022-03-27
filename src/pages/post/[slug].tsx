@@ -7,6 +7,7 @@ import { predicate } from '@prismicio/client';
 import { PrismicRichText } from '@prismicio/react';
 import { RichTextField } from '@prismicio/types';
 
+import { useRouter } from 'next/router';
 import Header from '../../components/Header';
 
 import { getPrismicClient } from '../../services/prismic';
@@ -34,6 +35,8 @@ interface PostProps {
 }
 
 export default function Post({ post }: PostProps): JSX.Element {
+  const { isFallback } = useRouter();
+
   return (
     <>
       <Head>
@@ -41,7 +44,7 @@ export default function Post({ post }: PostProps): JSX.Element {
       </Head>
 
       <main>
-        {!post ? (
+        {isFallback ? (
           <div className={styles.postWait}>
             <h1>Carregando...</h1>
           </div>
@@ -78,10 +81,10 @@ export default function Post({ post }: PostProps): JSX.Element {
 
               <div className={styles.postContent}>
                 {post.data.content.map(content => (
-                  <>
+                  <div key={content.heading}>
                     <h2>{content.heading}</h2>
                     <PrismicRichText field={content.body} />
-                  </>
+                  </div>
                 ))}
               </div>
             </article>

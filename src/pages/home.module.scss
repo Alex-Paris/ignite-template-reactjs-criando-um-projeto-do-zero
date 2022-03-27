@@ -5,13 +5,15 @@
 .contentPosts {
 	margin: 3rem auto 0;
 
+  > div {
+    & + div {
+			margin-top: 3rem;
+		}
+  }
+
   a {
     display: block;
     cursor: pointer;
-
-		& + a {
-			margin-top: 3rem;
-		}
 
     h1 {
       font-size: 1.75rem;
