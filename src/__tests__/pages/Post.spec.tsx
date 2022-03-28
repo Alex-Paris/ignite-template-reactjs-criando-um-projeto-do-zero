@@ -187,6 +187,9 @@ describe('Post', () => {
       getByUID: () => {
         return Promise.resolve(mockedGetByUIDReturn);
       },
+      query: () => {
+        return Promise.resolve(mockedQueryReturn);
+      },
       get: () => {
         return Promise.resolve(mockedQueryReturn);
       },
