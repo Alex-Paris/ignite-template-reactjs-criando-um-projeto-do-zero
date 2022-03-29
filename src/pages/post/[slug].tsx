@@ -4,8 +4,8 @@ import Head from 'next/head';
 import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
 import ptBR from 'date-fns/locale/pt-BR';
 import { format } from 'date-fns';
+import { PrismicDocument, Query, RichTextField } from '@prismicio/types';
 import { PrismicRichText } from '@prismicio/react';
-import { RichTextField } from '@prismicio/types';
 import { predicate } from '@prismicio/client';
 import { RichText } from 'prismic-dom';
 
@@ -115,12 +115,19 @@ export default function Post({ post: propPost }: PostProps): JSX.Element {
   );
 }
 
+/* eslint @typescript-eslint/no-explicit-any: ["off"] */
 export const getStaticPaths: GetStaticPaths = async () => {
   const prismic = getPrismicClient();
-  const response = await prismic.get({
-    predicates: [predicate.at('document.type', 'posts')],
-    pageSize: 3,
-  });
+  let response: Query<PrismicDocument<Record<string, any>, string, string>>;
+
+  if (!process.env.PRISMIC_OLD_VERSION) {
+    response = await prismic.query('');
+  } else {
+    response = await prismic.get({
+      predicates: [predicate.at('document.type', 'posts')],
+      pageSize: 2,
+    });
+  }
 
   const paths = response.results.map(post => {
     return {

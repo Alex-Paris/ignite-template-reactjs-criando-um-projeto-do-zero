@@ -2,6 +2,7 @@ import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { FiCalendar, FiUser } from 'react-icons/fi';
+import { PrismicDocument, Query } from '@prismicio/types';
 import { predicate } from '@prismicio/client';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -113,11 +114,19 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
 
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient();
-  const postsResponse = await prismic.get({
-    predicates: [predicate.at('document.type', 'posts')],
-    fetch: ['posts.title', 'posts.subtitle', 'posts.author'],
-    pageSize: 2,
-  });
+  let postsResponse: Query<
+    PrismicDocument<Record<string, any>, string, string>
+  >;
+
+  if (!process.env.PRISMIC_OLD_VERSION) {
+    postsResponse = await prismic.query('');
+  } else {
+    postsResponse = await prismic.get({
+      predicates: [predicate.at('document.type', 'posts')],
+      fetch: ['posts.title', 'posts.subtitle', 'posts.author'],
+      pageSize: 2,
+    });
+  }
 
   return {
     props: {
